@@ -6,8 +6,8 @@ import (
 
 type Lexer struct {
 	input string
-	position int
-	readPosition int
+	position int // curr char
+	readPosition int // after curr char
 	ch byte
 }
 
@@ -27,7 +27,7 @@ func (l *Lexer) NextToken() token.Token {
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
-			tok = newTokenStr(token.EQ, string(ch) + string(l.ch))
+			tok = newTokenStr(token.EQ, string(ch) + string(l.ch)) // ==
 		} else {
 			tok = newToken(token.ASSIGN, l.ch)
 		}
@@ -105,9 +105,11 @@ type identifyChar func(byte) bool
 
 func (l *Lexer) read(identifyingFunction identifyChar) string {
 	position := l.position
+
 	for identifyingFunction(l.ch) {
 		l.readChar()
 	}
+
 	return l.input[position:l.position]
 }
 
@@ -116,7 +118,7 @@ func isLetter(ch byte) bool {
 }
 
 func isDigit(ch byte) bool {
-	return '0' <= ch  && ch <= '9'
+	return '0' <= ch && ch <= '9'
 }
 
 func newToken(tokenType token.TokenType, ch byte) token.Token {
